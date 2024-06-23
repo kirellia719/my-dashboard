@@ -1,0 +1,38 @@
+.rs-uploader {
+  input[type="file"] {
+    display: none;
+  }
+}
+
+.upload-image {
+  aspect-ratio: 2/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // border: 1px dashed #3498ff;
+  border-radius: 6px;
+}
+
+.crop-image {
+  position: relative;
+  img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    border-radius: 3px;
+  }
+
+  .crop-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #0000003e;
+    padding: 5px;
+    color: #fff;
+    aspect-ratio: 1/1;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+.tiny-editor {
+   height: 100%;
+   padding: 0;
+
+   .tox {
+      border-radius: 0 !important;
+      .tox-edit-area::before {
+         border: none !important;
+      }
+   }
+}
+
+.overlay {
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: rgba(0, 0, 0, 0.1);
+   z-index: 1000;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.2);
+      border-left-color: #000;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+   }
+}
+
+/* Spinner */
+
+@keyframes spin {
+   to {
+      transform: rotate(360deg);
+   }
+}

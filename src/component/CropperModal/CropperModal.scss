@@ -1,0 +1,8 @@
+.cropper-modal {
+  width: calc(100%);
+  .cropper-container {
+    width: 100%;
+    max-width: 500px;
+    max-height: 400px;
+  }
+}

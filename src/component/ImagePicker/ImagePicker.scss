@@ -1,0 +1,48 @@
+.ImagePicker {
+  .list-wrapper {
+    aspect-ratio: 10/9;
+    height: min-content a !important;
+    overflow-y: auto;
+  }
+  .image-list {
+    // aspect-ratio: 1/1;
+    display: grid;
+    grid-template-columns: repeat(5, calc((100% - 10px) / 5));
+
+    justify-content: space-between;
+    row-gap: 2px;
+    .image-item {
+      img {
+        width: 100%;
+        aspect-ratio: 2/3;
+        object-fit: cover;
+      }
+
+      &.active {
+        position: relative;
+
+        img {
+          border: 2px solid #3a9cec;
+          border-radius: 4px;
+          opacity: 0.5;
+        }
+
+        .image-number {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-weight: 700;
+          background-color: #3a9cec;
+          color: #fff;
+          width: 1.5rem;
+          height: 1.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+.MainLayout {
+   height: 100%;
+   width: 100%;
+   display: flex;
+
+   .sidebar-container {
+      width: 270px;
+   }
+
+   .body-container {
+      flex-grow: 1;
+      overflow: auto;
+   }
+
+   @media screen and (max-width: 768px) {
+      flex-direction: column;
+
+      .sidebar-container {
+         width: 100%;
+      }
+   }
+}
