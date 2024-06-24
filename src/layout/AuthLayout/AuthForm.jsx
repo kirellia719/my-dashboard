@@ -1,20 +1,30 @@
 import { useState } from "react";
 
 import api from "api";
-import { Message, toaster } from "rsuite";
+import { LoginAction } from "../../redux/AuthReducer";
+import { useDispatch } from "react-redux";
 
-const toast = (message, type) => {
-   toaster.push(
-      <Message showIcon type={type}>
-         {message}
-      </Message>,
-      { duration: 2000 }
-   );
-};
+import { processAPI, toast } from "../../utils/function";
 
 const LoginForm = () => {
-   const handleLogin = (e) => {
+   const dispatch = useDispatch();
+   const handleLogin = async (e) => {
       e.preventDefault();
+      try {
+         const { username, password } = loginInput;
+         const data = processAPI(
+            await api.post("/auth/login", {
+               username,
+               password,
+            })
+         );
+         dispatch(LoginAction(data));
+      } catch (error) {
+         processAPI({
+            status: error?.response?.status || 500,
+            message: "Lỗi hệ thống",
+         });
+      }
    };
 
    const [loginInput, setLoginInput] = useState({

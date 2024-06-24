@@ -3,6 +3,10 @@ import "./style.scss";
 import { useState } from "react";
 
 import AuthForm from "./AuthForm";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+
+import router_dom from "../../utils/router";
 
 const AuthLayout = () => {
    const [active, setActive] = useState(false);
@@ -10,6 +14,9 @@ const AuthLayout = () => {
    const handleToggle = () => {
       setActive(!active);
    };
+
+   const Auth = useSelector((state) => state.Auth);
+   if (Auth.token) return <Navigate to={`/${router_dom[0].link || ""}`} />;
 
    return (
       <div className="AuthLayout">
