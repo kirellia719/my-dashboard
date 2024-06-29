@@ -5,10 +5,9 @@ import api from "api";
 import DocIcon from "./image-icon/doc-icon.png";
 import FolderIcon from "./image-icon/folder-icon.png";
 import ImageIcon from "./image-icon/image-icon.png";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Dropdown, Popover, Whisper } from "rsuite";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 
 const typeMapping = {
    "image/png": "image",
@@ -88,20 +87,20 @@ export default ({
          onContextMenu={handleContextMenu}
       >
          <Whisper
-            trigger="click"
+            trigger="contextMenu"
             placement="auto"
             open={open}
             speaker={isFolder ? FolderContext : FileContext}
          >
-            <div
+            <NavLink
+               to={`/file-manager/${id}`}
                className={`FileItem ${selected ? "selected" : ""}`}
                title={name}
-               onDoubleClick={handleOpenFolder}
                ref={targetRef}
             >
                <img src={mappingIcon[type]} alt="" className="file-icon" />
                <div className="file-name">{name}</div>
-            </div>
+            </NavLink>
          </Whisper>
       </div>
    );
