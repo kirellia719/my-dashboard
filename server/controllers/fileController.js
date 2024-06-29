@@ -40,6 +40,7 @@ const getFiles = async (req, res) => {
          data: { files },
       } = await drive.files.list({
          q: `'${folderId}' in parents`, // Truy vấn các tệp trong thư mục cụ thể
+         fields: "files(id, name, mimeType, webContentLink)",
       });
       const parents = await findParent(folderId);
       res.send({
@@ -84,4 +85,17 @@ const findParent = async (folderId) => {
    } catch (error) {}
 };
 
-export default { uploadFile, getFiles, getParents };
+const downloadFile = async (req, res) => {
+   const { fileId } = req.params; // Lấy ID của tệp từ query parameter
+
+   try {
+      // Lấy thông tin về tệp để lấy tên và MIME type
+      const file = await drive.files.get({
+         fileId,
+      });
+
+      res.send(file);
+   } catch (error) {}
+};
+
+export default { uploadFile, getFiles, getParents, downloadFile };

@@ -1,11 +1,14 @@
 import "./style.scss";
 
+import api from "api";
+
 import DocIcon from "./image-icon/doc-icon.png";
 import FolderIcon from "./image-icon/folder-icon.png";
 import ImageIcon from "./image-icon/image-icon.png";
 import { useNavigate } from "react-router-dom";
-import { Dropdown, Popover, Tooltip, Whisper } from "rsuite";
+import { Dropdown, Popover, Whisper } from "rsuite";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 const typeMapping = {
    "image/png": "image",
@@ -21,6 +24,7 @@ export default ({
    id,
    mimeType,
    name = "noname",
+   webContentLink,
    selected = false,
    onClick,
 }) => {
@@ -46,6 +50,10 @@ export default ({
       }
    };
 
+   const handleDownload = () => {
+      window.open(webContentLink);
+   };
+
    const FolderContext = (
       <Popover full>
          <Dropdown.Menu>
@@ -58,7 +66,7 @@ export default ({
       <Popover full>
          <Dropdown.Menu>
             <Dropdown.Item>Xem</Dropdown.Item>
-            <Dropdown.Item>Tải xuống</Dropdown.Item>
+            <Dropdown.Item onClick={handleDownload}>Tải xuống</Dropdown.Item>
          </Dropdown.Menu>
       </Popover>
    );

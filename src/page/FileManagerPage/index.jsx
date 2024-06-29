@@ -16,9 +16,9 @@ export default () => {
    const dispatch = useDispatch();
    const params = useParams();
    const folderId = params["*"];
+
    useEffect(() => {
       const fetchFiles = async () => {
-         console.log("fetch", folderId);
          setLoading(true);
          try {
             const { data } = await api.get(
