@@ -1,7 +1,9 @@
 import EditIcon from "@rsuite/icons/Edit";
+import SingleSourceIcon from "@rsuite/icons/SingleSource";
 
 import NotePage from "~/page/NotePage";
-import FashionPage from "~/page/FashionPage";
+import FileManagerPage from "~/page/FileManagerPage";
+import VideoPage from "~/page/VideoPage";
 
 const router_dom = [
    {
@@ -11,10 +13,16 @@ const router_dom = [
       page: NotePage,
    },
    {
-      link: "fashion",
-      icon: EditIcon,
-      title: "Thời trang",
-      page: FashionPage,
+      link: "file-manager",
+      icon: SingleSourceIcon,
+      title: "Quản lý tệp",
+      page: FileManagerPage,
+   },
+   {
+      link: "video",
+      icon: SingleSourceIcon,
+      title: "Video",
+      page: VideoPage,
    },
 ];
 

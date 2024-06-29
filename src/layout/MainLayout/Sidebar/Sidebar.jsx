@@ -2,7 +2,7 @@ import "./Sidebar.scss";
 
 import { useState, forwardRef } from "react";
 
-import router_dom from "../../utils/router";
+import router_dom from "../../../utils/router";
 
 import MenuIcon from "@rsuite/icons/Menu";
 import ExitIcon from "@rsuite/icons/Exit";
@@ -10,9 +10,9 @@ import ExitIcon from "@rsuite/icons/Exit";
 import { Drawer, Sidenav, Nav, Avatar } from "rsuite";
 
 import { Link, useLocation } from "react-router-dom";
-import { useWindowSize } from "../../utils/function";
+import { useWindowSize } from "../../../utils/function";
 import { useDispatch, useSelector } from "react-redux";
-import { LogoutAction } from "../../redux/AuthReducer";
+import { LogoutAction } from "../../../redux/AuthReducer";
 
 const NavLink = forwardRef(({ href, children, ...rest }, ref) => {
    return (
@@ -73,12 +73,14 @@ const Sidebar = () => {
 
    return (
       <div className="Sidebar">
-         <div className="sidenav">
+         <div
+            className={`sidenav ${isMobile ? "border-bottom" : "border-right"}`}
+         >
             <div className="sidebar-header">
-               <div className="sidebar-header-item">
+               <NavLink className="sidebar-header-item" to="/profile">
                   <Avatar circle src={avatar} className="logo" bordered />
                   {username}
-               </div>
+               </NavLink>
                {isMobile && (
                   <div
                      className="sidebar-header-item"

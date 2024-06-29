@@ -1,0 +1,56 @@
+.FileItem {
+   --item-height: 100px;
+   --name-height: 20px;
+   padding: 3px 5px 2px 5px;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   width: var(--item-height);
+   height: var(--item-height);
+   border-radius: 5px;
+   transition: 0.2s;
+   .file-icon {
+      height: calc(var(--item-height) - var(--name-height) - 10px);
+      display: flex;
+      justify-content: center;
+      object-fit: contain;
+   }
+
+   .file-name {
+      line-height: var(--name-height);
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.8rem;
+   }
+
+   &:hover {
+      background-color: rgba(162, 231, 254, 0.521);
+      cursor: pointer;
+
+      .file-icon {
+         animation-name: example;
+         animation-duration: 0.5s;
+         animation-timing-function: ease;
+         animation-fill-mode: forwards;
+      }
+   }
+
+   &.selected {
+      background-color: rgb(130, 215, 243);
+   }
+}
+
+@keyframes example {
+   0% {
+      transform: rotate(0deg);
+   }
+   50% {
+      transform: rotate(10deg);
+   }
+   100% {
+      transform: rotate(0deg);
+   }
+}

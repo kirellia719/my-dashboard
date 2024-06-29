@@ -3,12 +3,12 @@ import "./MainLayout.scss";
 import { useEffect } from "react";
 import api from "api";
 import { useDispatch, useSelector } from "react-redux";
-import { GetCurrentUserAction, LogoutAction } from "../../redux/AuthReducer";
+import { GetCurrentUserAction } from "../../redux/AuthReducer";
 
 import { Navigate, Outlet } from "react-router-dom";
-import Sidebar from "~/component/Sidebar/Sidebar";
+import Sidebar from "./Sidebar/Sidebar";
 
-import { processAPI, toast } from "../../utils/function";
+import { processAPI } from "../../utils/function";
 
 const MainLayout = () => {
    const dispatch = useDispatch();

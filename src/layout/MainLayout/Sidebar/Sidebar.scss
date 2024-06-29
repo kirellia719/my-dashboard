@@ -23,6 +23,13 @@
          }
       }
    }
+
+   .border-bottom {
+      border-bottom: 1px solid #ccc;
+   }
+   .border-right {
+      border-right: 1px solid #ccc;
+   }
 }
 
 .sidebar-router {
@@ -51,4 +58,8 @@
    img {
       object-fit: cover;
    }
+}
+
+.nav-item > svg {
+   transform: translateY(2px);
 }

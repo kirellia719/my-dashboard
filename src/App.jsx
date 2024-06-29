@@ -8,13 +8,23 @@ import MainLayout from "./layout/MainLayout/MainLayout";
 import store from "./redux";
 import { Provider } from "react-redux";
 import AuthLayout from "./layout/AuthLayout";
+import ProfilePage from "~/page/ProfilePage";
 import ToastContainer from "rsuite/esm/toaster/ToastContainer";
 
 const router = createBrowserRouter([
    {
       path: "/",
       element: <MainLayout />,
-      children: router_dom.map((r) => ({ path: r.link, element: <r.page /> })),
+      children: [
+         ...router_dom.map((r) => ({
+            path: `${r.link}/*`,
+            element: <r.page />,
+         })),
+         {
+            path: "/profile",
+            element: <ProfilePage />,
+         },
+      ],
    },
    {
       path: "/auth",
