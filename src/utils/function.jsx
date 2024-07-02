@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import { Message, toaster } from "rsuite";
 import store from "../redux";
 import { LogoutAction } from "../redux/AuthReducer";
+import { toast as t } from "react-toastify";
 
 export const toThousands = (value) => {
-   return (
-      (value
-         ? `${value}`.replace(/\d{1,3}(?=(\d{3})+(\.\d*)?$)/g, "$&,")
-         : value) + " VNĐ"
-   );
+   return (value ? `${value}`.replace(/\d{1,3}(?=(\d{3})+(\.\d*)?$)/g, "$&,") : value) + " VNĐ";
 };
 
 export const useWindowSize = () => {
@@ -19,7 +16,7 @@ export const useWindowSize = () => {
       window.addEventListener("resize", setSize);
       return () => window.removeEventListener("resize", setSize);
    }, [screenSize]);
-   return screenSize;
+   return screenSize < 768;
 };
 
 export const toast = (message, type = "success") => {
@@ -31,13 +28,29 @@ export const toast = (message, type = "success") => {
    );
 };
 
-export const processAPI = (res) => {
-   if (res.status === 200) {
-      return res.data;
+export const toastify = (message, type = "error") => {
+   t(message, {
+      position: "top-right",
+      autoClose: false,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+   });
+};
+
+export const processAPI = (response) => {
+   if (response.status === 200) {
+      const { data, message } = response;
+      return { data, message };
    } else {
-      if (res.status === 401) {
+      if (response.status === 401) {
          store.dispatch(LogoutAction());
       }
-      toast(res.message, "error");
+      toast(response.message, "error");
+      return {};
    }
 };

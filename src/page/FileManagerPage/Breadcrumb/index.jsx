@@ -16,16 +16,21 @@ export default () => {
    const { parents } = useSelector((state) => state.Files);
    const folderId = useParams()["*"];
    return (
-      <Breadcrumb separator={<AngleRightIcon />} className="breadcrumb">
+      <Breadcrumb
+         separator={<AngleRightIcon />}
+         className="breadcrumb"
+         maxItems={3}
+      >
          <Breadcrumb.Item href="/file-manager" as={NavLink} active={!folderId}>
             <TreeIcon />
          </Breadcrumb.Item>
          {parents.map((p, index) => (
             <Breadcrumb.Item
-               href={`/file-manager/${p.id}`}
+               href={`/file-manager/${p._id}`}
                as={NavLink}
                key={index}
-               active={folderId == p.id}
+               active={folderId == p._id}
+               style={{ fontSize: 14 }}
             >
                {p.name}
             </Breadcrumb.Item>

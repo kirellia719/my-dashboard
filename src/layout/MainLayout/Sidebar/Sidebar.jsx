@@ -29,16 +29,13 @@ const Sidebar = () => {
    const [open, setOpen] = useState(false);
    const [activeKey, setActiveKey] = useState(location.pathname);
 
-   const windowSize = useWindowSize();
-   const isMobile = windowSize < 768;
+   const isMobile = useWindowSize();
 
    const handleLogout = () => {
       dispatch(LogoutAction());
    };
 
-   const avatar =
-      user?.avatar ||
-      "https://adtimin.vn/wp-content/uploads/2017/09/Logo-1.jpg";
+   const avatar = user?.avatar || "https://adtimin.vn/wp-content/uploads/2017/09/Logo-1.jpg";
    const username = user?.username || "Dashboard";
 
    const side_body = (
@@ -53,6 +50,8 @@ const Sidebar = () => {
                      as={NavLink}
                      href={`/${r.link}`}
                      className="nav-item"
+                     onClick={() => setOpen(false)}
+                     active={location.pathname === `/${r.link}`}
                   >
                      {r.title}
                   </Nav.Item>
@@ -60,11 +59,7 @@ const Sidebar = () => {
             </Nav>
          </Sidenav.Body>
          <Nav>
-            <Nav.Item
-               icon={<ExitIcon />}
-               className="nav-item"
-               onClick={handleLogout}
-            >
+            <Nav.Item icon={<ExitIcon />} className="nav-item" onClick={handleLogout}>
                Đăng xuất
             </Nav.Item>
          </Nav>
@@ -73,30 +68,20 @@ const Sidebar = () => {
 
    return (
       <div className="Sidebar">
-         <div
-            className={`sidenav ${isMobile ? "border-bottom" : "border-right"}`}
-         >
+         <div className={`sidenav ${isMobile ? "border-bottom" : "border-right"}`}>
             <div className="sidebar-header">
                <NavLink className="sidebar-header-item" to="/profile">
                   <Avatar circle src={avatar} className="logo" bordered />
                   {username}
                </NavLink>
                {isMobile && (
-                  <div
-                     className="sidebar-header-item"
-                     onClick={() => setOpen(true)}
-                  >
+                  <div className="sidebar-header-item" onClick={() => setOpen(true)}>
                      <MenuIcon />
                   </div>
                )}
             </div>
             {isMobile ? (
-               <Drawer
-                  open={open}
-                  onClose={() => setOpen(false)}
-                  size={250}
-                  className="sidebar-drawer"
-               >
+               <Drawer open={open} onClose={() => setOpen(false)} size={250} className="sidebar-drawer">
                   <div className="drawer-header">
                      <div className="drawer-item">
                         <Avatar

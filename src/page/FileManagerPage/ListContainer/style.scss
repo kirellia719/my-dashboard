@@ -1,0 +1,26 @@
+.list-container {
+   height: 100%;
+   position: relative;
+   gap: 10px;
+   user-select: none;
+   .list-item {
+      --gap: 10px;
+      --width-item: 100px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--width-item), 1fr));
+      align-items: center;
+      gap: var(--gap);
+
+      @media screen and (max-width: 768px) {
+         --width-item: 80px;
+      }
+   }
+}
+
+.selection-box {
+   position: absolute;
+   border: 1px dashed #000;
+   background-color: rgb(204, 204, 204, 0.05);
+   pointer-events: none;
+}

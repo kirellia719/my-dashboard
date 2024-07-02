@@ -4,13 +4,14 @@ import SingleSourceIcon from "@rsuite/icons/SingleSource";
 import NotePage from "~/page/NotePage";
 import FileManagerPage from "~/page/FileManagerPage";
 import VideoPage from "~/page/VideoPage";
+import Test from "../component/Test";
 
 const router_dom = [
    {
-      link: "note",
-      icon: EditIcon,
-      title: "Ghi chú",
-      page: NotePage,
+      link: "test",
+      icon: SingleSourceIcon,
+      title: "Test",
+      page: Test,
    },
    {
       link: "file-manager",
@@ -19,9 +20,27 @@ const router_dom = [
       page: FileManagerPage,
    },
    {
-      link: "video",
+      link: "note",
+      icon: EditIcon,
+      title: "Ghi chú",
+      page: NotePage,
+   },
+   {
+      link: "video (not)",
       icon: SingleSourceIcon,
       title: "Video",
+      page: VideoPage,
+   },
+   {
+      link: "map",
+      icon: SingleSourceIcon,
+      title: "Map (not)",
+      page: VideoPage,
+   },
+   {
+      link: "chat",
+      icon: SingleSourceIcon,
+      title: "Chat (not)",
       page: VideoPage,
    },
 ];

@@ -10,6 +10,8 @@ import { Provider } from "react-redux";
 import AuthLayout from "./layout/AuthLayout";
 import ProfilePage from "~/page/ProfilePage";
 import ToastContainer from "rsuite/esm/toaster/ToastContainer";
+import { ToastContainer as ToastifyContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter([
    {
@@ -36,6 +38,7 @@ const App = () => {
    return (
       <Provider store={store}>
          <ToastContainer />
+         <ToastifyContainer />
          <div className="App">
             <RouterProvider router={router} />
          </div>

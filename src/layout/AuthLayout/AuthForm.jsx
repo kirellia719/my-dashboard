@@ -12,13 +12,13 @@ const LoginForm = () => {
       e.preventDefault();
       try {
          const { username, password } = loginInput;
-         const data = processAPI(
-            await api.post("/auth/login", {
-               username,
-               password,
-            })
-         );
-         dispatch(LoginAction(data));
+         const { data } = await api.post("/auth/login", {
+            username,
+            password,
+         });
+         if (data) {
+            dispatch(LoginAction(data));
+         }
       } catch (error) {
          processAPI({
             status: error?.response?.status || 500,
@@ -32,27 +32,14 @@ const LoginForm = () => {
       password: "",
    });
 
-   const handleChange = (e) =>
-      setLoginInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+   const handleChange = (e) => setLoginInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
    const { username, password } = loginInput;
    return (
       <form onSubmit={handleLogin}>
          <h3>Sign In</h3>
-         <input
-            type="text"
-            placeholder="Tài khoản"
-            name="username"
-            value={username}
-            onChange={handleChange}
-         />
-         <input
-            type="password"
-            placeholder="Mật khẩu"
-            name="password"
-            value={password}
-            onChange={handleChange}
-         />
+         <input type="text" placeholder="Tài khoản" name="username" value={username} onChange={handleChange} />
+         <input type="password" placeholder="Mật khẩu" name="password" value={password} onChange={handleChange} />
          <input type="submit" value="Đăng nhập" />
          <p className="forgot">Quên mật khẩu</p>
       </form>
@@ -81,13 +68,7 @@ const RegisterForm = ({ setActive }) => {
             };
 
             const { data } = await api.post("/auth/register", formRequest);
-            if (data.status === 200) {
-               toast(data.message, "success");
-               setRegisterInput(initRegisterInput);
-               setActive(false);
-            } else {
-               toast(data.message, "error");
-            }
+            console.log(data);
          } catch (error) {}
       }
    };
@@ -101,27 +82,9 @@ const RegisterForm = ({ setActive }) => {
    return (
       <form onSubmit={handleRegister}>
          <h3>Sign Up</h3>
-         <input
-            type="text"
-            placeholder="Tài khoản"
-            name="username"
-            value={username}
-            onChange={handleChange}
-         />
-         <input
-            type="email"
-            placeholder="Email"
-            name="email"
-            value={email}
-            onChange={handleChange}
-         />
-         <input
-            type="password"
-            placeholder="Mật khẩu"
-            name="password"
-            value={password}
-            onChange={handleChange}
-         />
+         <input type="text" placeholder="Tài khoản" name="username" value={username} onChange={handleChange} />
+         <input type="email" placeholder="Email" name="email" value={email} onChange={handleChange} />
+         <input type="password" placeholder="Mật khẩu" name="password" value={password} onChange={handleChange} />
          <input
             type="password"
             placeholder="Nhập lại mật khẩu"

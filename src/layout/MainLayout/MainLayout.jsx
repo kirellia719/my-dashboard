@@ -8,8 +8,6 @@ import { GetCurrentUserAction } from "../../redux/AuthReducer";
 import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar/Sidebar";
 
-import { processAPI } from "../../utils/function";
-
 const MainLayout = () => {
    const dispatch = useDispatch();
 
@@ -17,8 +15,8 @@ const MainLayout = () => {
    useEffect(() => {
       const getCurrentUser = async () => {
          try {
-            const data = processAPI(await api.get("/auth/me"));
-            dispatch(GetCurrentUserAction(data));
+            const { data } = await api.get("/auth/me");
+            if (data) dispatch(GetCurrentUserAction(data));
          } catch (error) {
             console.error(error);
          }

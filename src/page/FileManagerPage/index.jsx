@@ -2,20 +2,27 @@ import "./style.scss";
 
 import api from "api";
 
-import { Loader } from "rsuite";
+import PlusIcon from "@rsuite/icons/Plus";
+import { Dropdown, IconButton, Loader, Popover, Whisper } from "rsuite";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import FileItem from "./FileItem";
 import { useDispatch, useSelector } from "react-redux";
-import { GetFilesAction } from "../../redux/FileManagerReducer";
+import { AddFileAction, GetFilesAction } from "../../redux/FileManagerReducer";
 import Breadcrumb from "./Breadcrumb";
-
+import NewFolderModal from "./NewFolderModal";
+import { toast } from "react-toastify";
+import ListContainer from "./ListContainer";
 export default () => {
    const [loading, setLoading] = useState(false);
    const dispatch = useDispatch();
    const params = useParams();
    const folderId = params["*"];
+
+   const fileInputRef = useRef(null);
+
+   const [newFolder, setNewFolder] = useState(false);
 
    useEffect(() => {
       const fetchFiles = async () => {
@@ -24,7 +31,9 @@ export default () => {
             const { data } = await api.get(
                `/file/${folderId ? folderId : "root"}`
             );
-            dispatch(GetFilesAction(data));
+            if (data) {
+               dispatch(GetFilesAction(data));
+            }
          } catch (error) {}
          setLoading(false);
       };
@@ -32,23 +41,112 @@ export default () => {
       fetchFiles();
    }, [folderId]);
 
-   const { files } = useSelector((state) => state.Files);
+   const handleNewFolder = () => {
+      setNewFolder(true);
+   };
+
+   const handleFileUpload = () => {
+      fileInputRef.current.click();
+   };
+
+   const uploadFile = async (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const toastId = toast.loading(`Uploading ${file.name}...`, {
+         autoClose: false,
+      });
+
+      try {
+         const { data } = await api.post(
+            `/file/upload/${folderId ? folderId : "root"}`,
+            formData
+         );
+         if (data) {
+            toast.update(toastId, {
+               render: `${file.name} uploaded successfully!`,
+               type: "success",
+               isLoading: false,
+               autoClose: 5000,
+            });
+            dispatch(AddFileAction(data));
+         }
+      } catch (error) {
+         toast.update(toastId, {
+            render: `Error uploading ${file.name}`,
+            type: "error",
+            isLoading: false,
+            autoClose: 5000,
+         });
+      }
+   };
+
+   const fileChange = (e) => {
+      const fileList = e.target.files;
+      try {
+         let delay = 0;
+         for (let file of fileList) {
+            setTimeout(() => uploadFile(file), [delay]);
+            delay += 1000;
+         }
+      } catch (error) {}
+   };
+
    return (
       <div className="FileManagerPage">
+         <input
+            hidden
+            type="file"
+            ref={fileInputRef}
+            onChange={fileChange}
+            multiple
+         />
          <div className="header-breadcrumb">
             <Breadcrumb />
          </div>
-         <div className="file-manager-container custom-scrollbar">
-            {loading ? (
-               <Loader />
-            ) : (
-               <div className="list-item">
-                  {files.map((f) => (
-                     <FileItem {...f} key={f.id} />
-                  ))}
-               </div>
-            )}
+         <div className="file-container custom-scrollbar">
+            {loading ? <Loader /> : <ListContainer />}
          </div>
+         <div className="task-menu">
+            <Whisper
+               placement="topEnd"
+               trigger="click"
+               speaker={({ onClose, left, top, className, ...rest }, ref) => {
+                  return (
+                     <Popover ref={ref} className={className} full>
+                        <Dropdown.Menu>
+                           <Dropdown.Item
+                              className="task-btn"
+                              onClick={() => {
+                                 onClose();
+                                 handleNewFolder();
+                              }}
+                           >
+                              Tạo thư mục
+                           </Dropdown.Item>
+                           <Dropdown.Item
+                              className="task-btn"
+                              onClick={() => {
+                                 onClose();
+                                 handleFileUpload();
+                              }}
+                           >
+                              Upload
+                           </Dropdown.Item>
+                        </Dropdown.Menu>
+                     </Popover>
+                  );
+               }}
+            >
+               <IconButton
+                  size="lg"
+                  appearance="primary"
+                  icon={<PlusIcon />}
+                  circle
+               />
+            </Whisper>
+         </div>
+         <NewFolderModal open={newFolder} onClose={() => setNewFolder(false)} />
       </div>
    );
 };

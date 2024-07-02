@@ -24,6 +24,7 @@
     "react-image-crop": "^11.0.5",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.22.3",
+    "react-toastify": "^10.0.5",
     "redux": "^5.0.1",
     "rsuite": "^5.59.1",
     "sass": "^1.75.0"

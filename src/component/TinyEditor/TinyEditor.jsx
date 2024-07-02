@@ -1,7 +1,8 @@
 import "./TinyEditor.scss";
 
-import { useEffect, useRef } from "react";
+import { useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
+import { Loader } from "rsuite";
 
 const key = import.meta.env.VITE_TINY_KEY;
 
@@ -12,6 +13,8 @@ export default function TinyEditor({
 }) {
    const editorRef = useRef(null);
 
+   const [loadEditor, setLoadEditor] = useState(true);
+
    const saveContent = (editor) => {
       const content = editor.getContent();
       onSave && onSave(content);
@@ -19,9 +22,13 @@ export default function TinyEditor({
 
    return (
       <div className="tiny-editor">
+         {loadEditor ? <Loader /> : null}
          <Editor
             apiKey={key}
-            onInit={(_evt, editor) => (editorRef.current = editor)}
+            onInit={(_evt, editor) => {
+               editorRef.current = editor;
+               setLoadEditor(false);
+            }}
             initialValue={initValue}
             init={{
                details_initial_state: "collapsed",

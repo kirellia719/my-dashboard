@@ -5,7 +5,7 @@
    display: flex;
    flex-direction: column;
    justify-content: space-between;
-   width: var(--item-height);
+   width: min(100%, var(--item-height));
    height: var(--item-height);
    border-radius: 5px;
    transition: 0.2s;
@@ -26,21 +26,19 @@
       font-size: 0.8rem;
    }
 
-   &:hover {
-      background-color: rgba(162, 231, 254, 0.521);
-      cursor: pointer;
-
-      .file-icon {
-         animation-name: example;
-         animation-duration: 0.5s;
-         animation-timing-function: ease;
-         animation-fill-mode: forwards;
-      }
-   }
-
    &.selected {
-      background-color: rgb(130, 215, 243);
+      background-color: rgba(178, 228, 244, 0.474);
    }
+
+   @media screen and (max-width: 768px) {
+      --item-height: 80px;
+      --name-height: 16px;
+   }
+}
+
+.center {
+   display: flex;
+   justify-content: center;
 }
 
 @keyframes example {
