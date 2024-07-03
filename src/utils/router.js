@@ -4,6 +4,7 @@ import SingleSourceIcon from "@rsuite/icons/SingleSource";
 import NotePage from "~/page/NotePage";
 import FileManagerPage from "~/page/FileManagerPage";
 import VideoPage from "~/page/VideoPage";
+import MapPage from "~/page/MapPage";
 import Test from "../component/Test";
 
 const router_dom = [
@@ -35,7 +36,7 @@ const router_dom = [
       link: "map",
       icon: SingleSourceIcon,
       title: "Map (not)",
-      page: VideoPage,
+      page: MapPage,
    },
    {
       link: "chat",

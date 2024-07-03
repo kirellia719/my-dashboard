@@ -1,7 +1,5 @@
-import "./style.scss";
-
-const App = () => {
-   return <>TEST</>;
+const Test = () => {
+   return <div>Test</div>;
 };
 
-export default App;
+export default Test;
