@@ -162,7 +162,7 @@ const ListContainer = () => {
       } catch (error) {
          console.log(error);
          toast.update(toastId, {
-            render: `Error uploading ${file.name}`,
+            render: `Lỗi khi xóa ${file.name}`,
             type: "error",
             isLoading: false,
             autoClose: 3000,
@@ -224,7 +224,15 @@ const ListContainer = () => {
    const renderDownload = () => {
       const handleDownload = async (id) => {
          setContextMenu(defaultContextMenu);
-         const { data } = await api.get(`/file/link/${id}`);
+         const { data } = await api.get(`/file/download/${id}`);
+         if (data) {
+            window.open(data);
+         }
+      };
+
+      const handleView = async (id) => {
+         setContextMenu(defaultContextMenu);
+         const { data } = await api.get(`/file/view/${id}`);
          if (data) {
             window.open(data);
          }
@@ -233,9 +241,14 @@ const ListContainer = () => {
          const item = itemsData.find((item) => item._id === selectedItems[0]);
          if (item && item.type !== "folder") {
             return (
-               <Button onClick={() => handleDownload(item.driveId)} appearance="subtle" className="btn-context">
-                  Tải xuống
-               </Button>
+               <>
+                  <Button onClick={() => handleView(item.driveId)} appearance="subtle" className="btn-context">
+                     Xem
+                  </Button>
+                  <Button onClick={() => handleDownload(item.driveId)} appearance="subtle" className="btn-context">
+                     Tải xuống
+                  </Button>
+               </>
             );
          }
       }
@@ -298,6 +311,7 @@ const ListContainer = () => {
                         </ButtonGroup>
                      ) : (
                         <ButtonGroup vertical>
+                           {renderDownload()}
                            <Button
                               appearance="subtle"
                               className="btn-context"
@@ -318,7 +332,6 @@ const ListContainer = () => {
                            >
                               Xóa
                            </Button>
-                           {renderDownload()}
                         </ButtonGroup>
                      )}
                   </Notification>

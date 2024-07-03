@@ -49,6 +49,7 @@ export default () => {
    const uploadFile = async (file) => {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("fileName", file.name);
 
       const toastId = toast.loading(`Đang tải ${file.name}...`, {
          autoClose: false,
