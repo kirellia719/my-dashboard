@@ -221,6 +221,27 @@ const ListContainer = () => {
       });
    };
 
+   const renderDownload = () => {
+      const handleDownload = async (id) => {
+         setContextMenu(defaultContextMenu);
+         const { data } = await api.get(`/file/link/${id}`);
+         if (data) {
+            window.open(data);
+         }
+      };
+      if (selectedItems.length == 1) {
+         const item = itemsData.find((item) => item._id === selectedItems[0]);
+         if (item && item.type !== "folder") {
+            return (
+               <Button onClick={() => handleDownload(item.driveId)} appearance="subtle" className="btn-context">
+                  Tải xuống
+               </Button>
+            );
+         }
+      }
+      return null;
+   };
+
    return (
       <>
          <div
@@ -297,6 +318,7 @@ const ListContainer = () => {
                            >
                               Xóa
                            </Button>
+                           {renderDownload()}
                         </ButtonGroup>
                      )}
                   </Notification>
