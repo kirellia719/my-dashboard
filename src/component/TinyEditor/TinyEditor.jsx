@@ -6,11 +6,7 @@ import { Loader } from "rsuite";
 
 const key = import.meta.env.VITE_TINY_KEY;
 
-export default function TinyEditor({
-   initValue = "",
-   onSave,
-   loading = false,
-}) {
+export default function TinyEditor({ initValue = "", onSave, loading = false }) {
    const editorRef = useRef(null);
 
    const [loadEditor, setLoadEditor] = useState(true);
@@ -55,7 +51,6 @@ export default function TinyEditor({
                   "code",
                   "help",
                   "wordcount",
-                  "checklist",
                   "save",
                   "emoticons",
                   "visualchars",
@@ -99,11 +94,10 @@ export default function TinyEditor({
                   "bold italic underline forecolor |" +
                   "alignleft aligncenter alignright alignjustify |" +
                   "blockquote emoticons link |" +
-                  "checklist bullist numlist | " +
+                  "bullist numlist | " +
                   "removeformat help|",
                // toolbar: "accordion addcomment aidialog aishortcuts aligncenter alignjustify alignleft alignnone alignright | anchor | blockquote blocks | backcolor | bold | casechange checklist copy cut | fontfamily fontsize forecolor h1 h2 h3 h4 h5 h6 hr indent | italic | language | lineheight | newdocument | outdent | paste pastetext | print exportpdf exportword importword | redo | remove removeformat | selectall | strikethrough | styles | subscript superscript underline | undo | visualaid | a11ycheck advtablerownumbering revisionhistory typopgraphy anchor restoredraft casechange charmap checklist code codesample addcomment showcomments ltr rtl editimage fliph flipv imageoptions rotateleft rotateright emoticons export footnotes footnotesupdate formatpainter fullscreen help image insertdatetime link openlink unlink bullist numlist media mergetags mergetags_list nonbreaking pagebreak pageembed permanentpen preview quickimage quicklink quicktable cancel save searchreplace showcomments spellcheckdialog spellchecker | table tablecellprops tablecopyrow tablecutrow tabledelete tabledeletecol tabledeleterow tableinsertdialog tableinsertcolafter tableinsertcolbefore tableinsertrowafter tableinsertrowbefore tablemergecells tablepasterowafter tablepasterowbefore tableprops tablerowprops tablesplitcells tableclass tablecellclass tablecellvalign tablecellborderwidth tablecellborderstyle tablecaption tablecellbackgroundcolor tablecellbordercolor tablerowheader tablecolheader | tableofcontents tableofcontentsupdate | template typography | insertfile inserttemplate addtemplate | visualblocks visualchars | wordcount",
-               content_style:
-                  "body { font-family: Helvetica,sans-serif; font-size: 14px }",
+               content_style: "body { font-family: Helvetica,sans-serif; font-size: 14px }",
                language: "vi",
                save_onsavecallback: saveContent,
                save_enablewhendirty: false,

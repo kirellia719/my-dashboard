@@ -20,6 +20,7 @@ export const useWindowSize = () => {
 };
 
 export const toast = (message, type = "success") => {
+   console.log(message);
    toaster.push(
       <Message showIcon type={type}>
          {message}
