@@ -7,8 +7,7 @@ import { Dropdown, IconButton, Loader, Popover, Whisper } from "rsuite";
 
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import FileItem from "./FileItem";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AddFileAction, GetFilesAction } from "../../redux/FileManagerReducer";
 import Breadcrumb from "./Breadcrumb";
 import NewFolderModal from "./NewFolderModal";
@@ -28,9 +27,7 @@ export default () => {
       const fetchFiles = async () => {
          setLoading(true);
          try {
-            const { data } = await api.get(
-               `/file/${folderId ? folderId : "root"}`
-            );
+            const { data } = await api.get(`/file/${folderId ? folderId : "root"}`);
             if (data) {
                dispatch(GetFilesAction(data));
             }
@@ -53,21 +50,20 @@ export default () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const toastId = toast.loading(`Uploading ${file.name}...`, {
+      const toastId = toast.loading(`Đang tải ${file.name}...`, {
          autoClose: false,
+         // className: "custom-toast",
       });
 
       try {
-         const { data } = await api.post(
-            `/file/upload/${folderId ? folderId : "root"}`,
-            formData
-         );
+         const { data } = await api.post(`/file/upload/${folderId ? folderId : "root"}`, formData);
          if (data) {
             toast.update(toastId, {
-               render: `${file.name} uploaded successfully!`,
+               render: `${file.name} tải lên thành công!`,
                type: "success",
                isLoading: false,
-               autoClose: 5000,
+               autoClose: 3000,
+               closeOnClick: true,
             });
             dispatch(AddFileAction(data));
          }
@@ -94,19 +90,11 @@ export default () => {
 
    return (
       <div className="FileManagerPage">
-         <input
-            hidden
-            type="file"
-            ref={fileInputRef}
-            onChange={fileChange}
-            multiple
-         />
+         <input hidden type="file" ref={fileInputRef} onChange={fileChange} multiple />
          <div className="header-breadcrumb">
             <Breadcrumb />
          </div>
-         <div className="file-container custom-scrollbar">
-            {loading ? <Loader /> : <ListContainer />}
-         </div>
+         <div className="file-container custom-scrollbar">{loading ? <Loader /> : <ListContainer />}</div>
          <div className="task-menu">
             <Whisper
                placement="topEnd"
@@ -138,12 +126,7 @@ export default () => {
                   );
                }}
             >
-               <IconButton
-                  size="lg"
-                  appearance="primary"
-                  icon={<PlusIcon />}
-                  circle
-               />
+               <IconButton size="lg" appearance="primary" icon={<PlusIcon />} circle />
             </Whisper>
          </div>
          <NewFolderModal open={newFolder} onClose={() => setNewFolder(false)} />

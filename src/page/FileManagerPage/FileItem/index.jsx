@@ -79,7 +79,12 @@ export default ({ _id, type, name = "noname", driveId, selected, id, onClick }) 
    return (
       <div className="center">
          {isFolder ? (
-            <NavLink to={`/file-manager/${_id}`} className={`FileItem`} title={name} ref={targetRef}>
+            <NavLink
+               to={`/file-manager/${_id}`}
+               className={`FileItem ${selected ? "selected" : ""}`}
+               title={name}
+               ref={targetRef}
+            >
                <img src={mappingIcon[type]} alt="" className="file-icon" />
                <div className="file-name">{name}</div>
             </NavLink>

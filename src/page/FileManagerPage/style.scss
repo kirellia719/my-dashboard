@@ -36,3 +36,13 @@
 .task-btn > * {
    font-size: 14px;
 }
+.custom-toast {
+   .Toastify__toast-body {
+      div {
+         max-width: 250px;
+         white-space: nowrap; /* Chỉ hiển thị trên 1 dòng */
+         overflow: hidden;
+         text-overflow: ellipsis;
+      }
+   }
+}

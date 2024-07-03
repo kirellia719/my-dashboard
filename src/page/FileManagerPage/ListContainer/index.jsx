@@ -1,7 +1,16 @@
-import { useSelector } from "react-redux";
+import "./style.scss";
+
+import api from "api";
+
+import { useDispatch, useSelector } from "react-redux";
 import FileItem from "../FileItem";
 import { useState, useRef, useEffect } from "react";
-import "./style.scss";
+import { Button, ButtonGroup, Dropdown, Input, List, Modal, Notification, Panel, Popover } from "rsuite";
+import { toast } from "react-toastify";
+import { DeleteFileAction } from "../../../redux/FileManagerReducer";
+import ModalRename from "./ModalRename";
+
+const defaultContextMenu = { visible: false, x: 0, y: 0, itemId: null };
 
 const ListContainer = () => {
    const [selectedItems, setSelectedItems] = useState([]);
@@ -11,7 +20,12 @@ const ListContainer = () => {
    const [selectionBox, setSelectionBox] = useState(null);
    const [ctrlKeyPressed, setCtrlKeyPressed] = useState(false);
 
+   const [contextMenu, setContextMenu] = useState(defaultContextMenu);
+   const [modalDelete, setModalDelete] = useState(false);
+   const [modalRename, setModalRename] = useState(false);
+
    const containerRef = useRef(null);
+   const dispatch = useDispatch();
 
    let { files } = useSelector((state) => state.Files);
    const itemsData = files.map((file) => ({ ...file, id: file._id }));
@@ -54,7 +68,11 @@ const ListContainer = () => {
    };
 
    const handleMouseDown = (e) => {
-      if (e.target.closest(".FileItem")) {
+      if (!e.target.closest(".btn-context")) {
+         setContextMenu(defaultContextMenu);
+      }
+      if (e.target.closest(".FileItem") || contextMenu.visible || modalDelete || modalRename) {
+         // ;
          return;
       } else {
          setCtrlKeyPressed(e.ctrlKey);
@@ -62,27 +80,9 @@ const ListContainer = () => {
       }
    };
 
-   const handleMouseMove = (e) => {
-      handleMove(e.clientX, e.clientY);
-   };
+   const handleMouseMove = (e) => handleMove(e.clientX, e.clientY);
 
-   const handleMouseUp = () => {
-      handleEnd();
-   };
-
-   const handleTouchStart = (e) => {
-      const touch = e.touches[0];
-      handleStart(touch.clientX, touch.clientY);
-   };
-
-   const handleTouchMove = (e) => {
-      const touch = e.touches[0];
-      handleMove(touch.clientX, touch.clientY);
-   };
-
-   const handleTouchEnd = () => {
-      handleEnd();
-   };
+   const handleMouseUp = () => handleEnd();
 
    const isWithinSelectionBox = (box, itemRect) => {
       const { top, left, bottom, right } = itemRect;
@@ -143,6 +143,46 @@ const ListContainer = () => {
       };
    }, []);
 
+   const deleteFile = async (file) => {
+      const toastId = toast.loading(`Đang xóa ${file.name}...`, {
+         autoClose: 2000,
+      });
+
+      try {
+         const { data, message } = await api.delete(`/file/folder/${file._id}`);
+         if (message) {
+            toast.update(toastId, {
+               render: `${file.name} đã xóa!`,
+               type: "success",
+               isLoading: false,
+               autoClose: 3000,
+            });
+            dispatch(DeleteFileAction(file._id));
+         }
+      } catch (error) {
+         console.log(error);
+         toast.update(toastId, {
+            render: `Error uploading ${file.name}`,
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+            closeOnClick: true,
+         });
+      }
+   };
+
+   const handleDelete = async () => {
+      try {
+         const fileList = itemsData.filter((item) => selectedItems.includes(item._id));
+         let delay = 0;
+         setSelectedItems([]);
+         for (let file of fileList) {
+            setTimeout(() => deleteFile(file), [delay]);
+            delay += 500;
+         }
+      } catch (error) {}
+   };
+
    const handleCtrlClick = (itemId) => {
       setSelectedItems((prevSelectedItems) => {
          if (prevSelectedItems.includes(itemId)) {
@@ -155,7 +195,7 @@ const ListContainer = () => {
 
    const handleItemClick = (id) => {
       setSelectedItems((prevSelectedItems) => {
-         if (prevSelectedItems.length == 1 && prevSelectedItems.includes(id)) {
+         if (prevSelectedItems.length === 1 && prevSelectedItems.includes(id)) {
             return [];
          } else {
             return [id];
@@ -163,34 +203,48 @@ const ListContainer = () => {
       });
    };
 
+   const handleContextMenu = (e, itemId) => {
+      e.preventDefault();
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const relativeX = e.clientX - containerRect.left;
+      const relativeY = e.clientY - containerRect.top;
+
+      if (!selectedItems.includes(itemId)) {
+         setSelectedItems([itemId]);
+      }
+
+      setContextMenu({
+         visible: true,
+         x: relativeX,
+         y: relativeY,
+         itemId: itemId,
+      });
+   };
+
    return (
       <>
-         <button onClick={() => console.log(selectedItems)}>{ctrlKeyPressed ? "Ctr" : "not"}</button>
          <div
-            className="list-container"
+            className={`list-container ${isSelecting ? "crosshair" : ""}`}
             ref={containerRef}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
          >
             <div className="list-item">
                {itemsData.map((item) => (
-                  <FileItem
-                     {...item}
-                     key={item.id}
-                     id={`item-${item.id}`}
-                     selected={selectedItems.includes(item.id) || newSelectItems.includes(item.id)}
-                     onClick={(e) => {
-                        if (e.ctrlKey) {
-                           handleCtrlClick(item.id);
-                        } else {
-                           handleItemClick(item.id);
-                        }
-                     }}
-                  />
+                  <div key={item.id} id={`item-${item.id}`} onContextMenu={(e) => handleContextMenu(e, item.id)}>
+                     <FileItem
+                        {...item}
+                        selected={selectedItems.includes(item.id) || newSelectItems.includes(item.id)}
+                        onClick={(e) => {
+                           if (e.ctrlKey) {
+                              handleCtrlClick(item.id);
+                           } else {
+                              handleItemClick(item.id);
+                           }
+                        }}
+                     />
+                  </div>
                ))}
                {isSelecting && selectionBox && (
                   <div
@@ -201,6 +255,83 @@ const ListContainer = () => {
                         width: Math.abs(selectionBox.endX - selectionBox.startX),
                         height: Math.abs(selectionBox.endY - selectionBox.startY),
                      }}
+                  />
+               )}
+               {contextMenu.visible && (
+                  <Notification
+                     className="context-menu"
+                     style={{ position: "absolute", top: contextMenu.y, left: contextMenu.x }}
+                  >
+                     {selectedItems.length > 1 ? (
+                        <ButtonGroup vertical>
+                           <Button
+                              appearance="subtle"
+                              className="btn-context"
+                              onClick={() => {
+                                 setModalDelete(true);
+                                 setContextMenu(defaultContextMenu);
+                              }}
+                           >
+                              Xóa
+                           </Button>
+                        </ButtonGroup>
+                     ) : (
+                        <ButtonGroup vertical>
+                           <Button
+                              appearance="subtle"
+                              className="btn-context"
+                              onClick={() => {
+                                 setModalRename(true);
+                                 setContextMenu(defaultContextMenu);
+                              }}
+                           >
+                              Đổi tên
+                           </Button>
+                           <Button
+                              appearance="subtle"
+                              className="btn-context"
+                              onClick={() => {
+                                 setModalDelete(true);
+                                 setContextMenu(defaultContextMenu);
+                              }}
+                           >
+                              Xóa
+                           </Button>
+                        </ButtonGroup>
+                     )}
+                  </Notification>
+               )}
+
+               <Modal open={modalDelete} onClose={() => setModalDelete(false)}>
+                  <Panel header="Xác nhận xóa các file sau">
+                     <List>
+                        {selectedItems.map((s) => (
+                           <List.Item key={s}>{itemsData.find((i) => i._id == s)?.name}</List.Item>
+                        ))}
+                     </List>
+                  </Panel>
+                  <Modal.Footer>
+                     <Button onClick={() => setModalDelete(false)}>Hủy</Button>
+                     <Button
+                        appearance="primary"
+                        onClick={() => {
+                           handleDelete();
+                           setModalDelete(false);
+                        }}
+                     >
+                        Xác nhận
+                     </Button>
+                  </Modal.Footer>
+               </Modal>
+
+               {modalRename && (
+                  <ModalRename
+                     open={modalRename}
+                     onClose={() => setModalRename(false)}
+                     onSubmit={() => {
+                        setModalRename(false);
+                     }}
+                     item={itemsData.find((item) => item._id === selectedItems[0])}
                   />
                )}
             </div>
