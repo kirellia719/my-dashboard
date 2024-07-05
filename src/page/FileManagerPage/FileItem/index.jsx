@@ -21,14 +21,19 @@ import { DeleteFileAction } from "../../../redux/FileManagerReducer";
 const mappingIcon = {
    "image/jpeg": ImageIcon,
    "image/png": ImageIcon,
+   "image/svg+xml": ImageIcon,
+
    "application/pdf": PDFIcon,
+
    "application/msword": DocIcon,
    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": DocIcon,
    "application/vnd.ms-powerpoint": DocIcon,
    "application/vnd.openxmlformats-officedocument.presentationml.presentation": DocIcon,
+
    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ExcelIcon,
    "video/mp4": VideoIcon,
    "application/octet-stream": RarIcon,
+
    folder: FolderIcon,
 };
 

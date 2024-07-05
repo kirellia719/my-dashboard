@@ -24,11 +24,23 @@ const ListContainer = () => {
    const [modalDelete, setModalDelete] = useState(false);
    const [modalRename, setModalRename] = useState(false);
 
+   const [sortContextMenu, setSortContextMenu] = useState(defaultContextMenu);
+
    const containerRef = useRef(null);
    const dispatch = useDispatch();
 
    let { files } = useSelector((state) => state.Files);
-   const itemsData = files.map((file) => ({ ...file, id: file._id }));
+   const itemsData = files
+      .map((file) => ({ ...file, id: file._id }))
+      .sort((a, b) => {
+         if (a.type === "folder" && b.type !== "folder") {
+            return -1;
+         } else if (a.type !== "folder" && b.type === "folder") {
+            return 1;
+         } else {
+            return a.name.localeCompare(b.name);
+         }
+      });
 
    const handleStart = (clientX, clientY) => {
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -71,8 +83,7 @@ const ListContainer = () => {
       if (!e.target.closest(".btn-context")) {
          setContextMenu(defaultContextMenu);
       }
-      if (e.target.closest(".FileItem") || contextMenu.visible || modalDelete || modalRename) {
-         // ;
+      if (e.button !== 0 || e.target.closest(".FileItem") || contextMenu.visible || modalDelete || modalRename) {
          return;
       } else {
          setCtrlKeyPressed(e.ctrlKey);
@@ -255,6 +266,78 @@ const ListContainer = () => {
       return null;
    };
 
+   const openSort = (e) => {
+      e.preventDefault();
+      if (!e.target.classList) return;
+      if (!e.target.classList.contains("list-container")) return;
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const relativeX = e.clientX - containerRect.left;
+      const relativeY = e.clientY - containerRect.top;
+
+      setContextMenu({
+         visible: true,
+         x: relativeX,
+         y: relativeY,
+      });
+   };
+
+   const ManySelected = (
+      <ButtonGroup vertical>
+         <Button
+            appearance="subtle"
+            className="btn-context"
+            onClick={() => {
+               setModalDelete(true);
+               setContextMenu(defaultContextMenu);
+            }}
+         >
+            Xóa
+         </Button>
+      </ButtonGroup>
+   );
+
+   const ItemSelected = (
+      <ButtonGroup vertical>
+         {renderDownload()}
+         <Button
+            appearance="subtle"
+            className="btn-context"
+            onClick={() => {
+               setModalRename(true);
+               setContextMenu(defaultContextMenu);
+            }}
+         >
+            Đổi tên
+         </Button>
+         <Button
+            appearance="subtle"
+            className="btn-context"
+            onClick={() => {
+               setModalDelete(true);
+               setContextMenu(defaultContextMenu);
+            }}
+         >
+            Xóa
+         </Button>
+      </ButtonGroup>
+   );
+
+   const SortSelect = (
+      <ButtonGroup vertical>
+         {renderDownload()}
+         <Button
+            appearance="subtle"
+            className="btn-context"
+            onClick={() => {
+               setSort(0);
+               setContextMenu(defaultContextMenu);
+            }}
+         >
+            Theo loại
+         </Button>
+      </ButtonGroup>
+   );
+
    return (
       <>
          <div
@@ -263,6 +346,7 @@ const ListContainer = () => {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
+            onContextMenu={openSort}
          >
             <div className="list-item">
                {itemsData.map((item) => (
@@ -296,44 +380,7 @@ const ListContainer = () => {
                      className="context-menu"
                      style={{ position: "absolute", top: contextMenu.y, left: contextMenu.x }}
                   >
-                     {selectedItems.length > 1 ? (
-                        <ButtonGroup vertical>
-                           <Button
-                              appearance="subtle"
-                              className="btn-context"
-                              onClick={() => {
-                                 setModalDelete(true);
-                                 setContextMenu(defaultContextMenu);
-                              }}
-                           >
-                              Xóa
-                           </Button>
-                        </ButtonGroup>
-                     ) : (
-                        <ButtonGroup vertical>
-                           {renderDownload()}
-                           <Button
-                              appearance="subtle"
-                              className="btn-context"
-                              onClick={() => {
-                                 setModalRename(true);
-                                 setContextMenu(defaultContextMenu);
-                              }}
-                           >
-                              Đổi tên
-                           </Button>
-                           <Button
-                              appearance="subtle"
-                              className="btn-context"
-                              onClick={() => {
-                                 setModalDelete(true);
-                                 setContextMenu(defaultContextMenu);
-                              }}
-                           >
-                              Xóa
-                           </Button>
-                        </ButtonGroup>
-                     )}
+                     {selectedItems.length == 0 ? SortSelect : selectedItems.length > 1 ? ManySelected : ItemSelected}
                   </Notification>
                )}
 

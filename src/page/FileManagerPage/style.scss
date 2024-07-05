@@ -18,18 +18,22 @@
       }
    }
 
-   .file-container {
+   .dropzone {
       flex: 1 1 auto;
       overflow-y: auto;
-      .file-manager-container {
+      height: 100%;
+      .file-container {
          height: 100%;
+         .file-manager-container {
+            height: 100%;
+         }
       }
-   }
 
-   .task-menu {
-      position: absolute;
-      bottom: 1rem;
-      right: 1rem;
+      .task-menu {
+         position: absolute;
+         bottom: 1rem;
+         right: 1rem;
+      }
    }
 }
 

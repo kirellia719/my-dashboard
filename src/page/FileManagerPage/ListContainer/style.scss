@@ -34,3 +34,9 @@
       padding: 0;
    }
 }
+
+.panel {
+   & > * {
+      padding: 0.5rem !important;
+   }
+}
