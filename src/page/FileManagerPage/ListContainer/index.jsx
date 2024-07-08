@@ -346,77 +346,84 @@ const ListContainer = () => {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            onContextMenu={openSort}
          >
-            <div className="list-item">
-               {itemsData.map((item) => (
-                  <div key={item.id} id={`item-${item.id}`} onContextMenu={(e) => handleContextMenu(e, item.id)}>
-                     <FileItem
-                        {...item}
-                        selected={selectedItems.includes(item.id) || newSelectItems.includes(item.id)}
-                        onClick={(e) => {
-                           if (e.ctrlKey) {
-                              handleCtrlClick(item.id);
-                           } else {
-                              handleItemClick(item.id);
-                           }
+            {itemsData.length == 0 ? (
+               <div style={{ padding: "1rem" }}>Không có file nào</div>
+            ) : (
+               <div className="list-item">
+                  {itemsData.map((item) => (
+                     <div key={item.id} id={`item-${item.id}`} onContextMenu={(e) => handleContextMenu(e, item.id)}>
+                        <FileItem
+                           {...item}
+                           selected={selectedItems.includes(item.id) || newSelectItems.includes(item.id)}
+                           onClick={(e) => {
+                              if (e.ctrlKey) {
+                                 handleCtrlClick(item.id);
+                              } else {
+                                 handleItemClick(item.id);
+                              }
+                           }}
+                        />
+                     </div>
+                  ))}
+                  {isSelecting && selectionBox && (
+                     <div
+                        className="selection-box"
+                        style={{
+                           top: Math.min(selectionBox.startY, selectionBox.endY),
+                           left: Math.min(selectionBox.startX, selectionBox.endX),
+                           width: Math.abs(selectionBox.endX - selectionBox.startX),
+                           height: Math.abs(selectionBox.endY - selectionBox.startY),
                         }}
                      />
-                  </div>
-               ))}
-               {isSelecting && selectionBox && (
-                  <div
-                     className="selection-box"
-                     style={{
-                        top: Math.min(selectionBox.startY, selectionBox.endY),
-                        left: Math.min(selectionBox.startX, selectionBox.endX),
-                        width: Math.abs(selectionBox.endX - selectionBox.startX),
-                        height: Math.abs(selectionBox.endY - selectionBox.startY),
-                     }}
-                  />
-               )}
-               {contextMenu.visible && (
-                  <Notification
-                     className="context-menu"
-                     style={{ position: "absolute", top: contextMenu.y, left: contextMenu.x }}
-                  >
-                     {selectedItems.length == 0 ? SortSelect : selectedItems.length > 1 ? ManySelected : ItemSelected}
-                  </Notification>
-               )}
-
-               <Modal open={modalDelete} onClose={() => setModalDelete(false)}>
-                  <Panel header="Xác nhận xóa các file sau">
-                     <List>
-                        {selectedItems.map((s) => (
-                           <List.Item key={s}>{itemsData.find((i) => i._id == s)?.name}</List.Item>
-                        ))}
-                     </List>
-                  </Panel>
-                  <Modal.Footer>
-                     <Button onClick={() => setModalDelete(false)}>Hủy</Button>
-                     <Button
-                        appearance="primary"
-                        onClick={() => {
-                           handleDelete();
-                           setModalDelete(false);
-                        }}
+                  )}
+                  {contextMenu.visible && (
+                     <Notification
+                        className="context-menu"
+                        style={{ position: "absolute", top: contextMenu.y, left: contextMenu.x }}
                      >
-                        Xác nhận
-                     </Button>
-                  </Modal.Footer>
-               </Modal>
+                        {selectedItems.length == 0
+                           ? SortSelect
+                           : selectedItems.length > 1
+                           ? ManySelected
+                           : ItemSelected}
+                     </Notification>
+                  )}
 
-               {modalRename && (
-                  <ModalRename
-                     open={modalRename}
-                     onClose={() => setModalRename(false)}
-                     onSubmit={() => {
-                        setModalRename(false);
-                     }}
-                     item={itemsData.find((item) => item._id === selectedItems[0])}
-                  />
-               )}
-            </div>
+                  <Modal open={modalDelete} onClose={() => setModalDelete(false)}>
+                     <Panel header="Xác nhận xóa các file sau">
+                        <List>
+                           {selectedItems.map((s) => (
+                              <List.Item key={s}>{itemsData.find((i) => i._id == s)?.name}</List.Item>
+                           ))}
+                        </List>
+                     </Panel>
+                     <Modal.Footer>
+                        <Button onClick={() => setModalDelete(false)}>Hủy</Button>
+                        <Button
+                           appearance="primary"
+                           onClick={() => {
+                              handleDelete();
+                              setModalDelete(false);
+                           }}
+                        >
+                           Xác nhận
+                        </Button>
+                     </Modal.Footer>
+                  </Modal>
+
+                  {modalRename && (
+                     <ModalRename
+                        open={modalRename}
+                        onClose={() => setModalRename(false)}
+                        onSubmit={() => {
+                           setModalRename(false);
+                        }}
+                        item={itemsData.find((item) => item._id === selectedItems[0])}
+                     />
+                  )}
+               </div>
+            )}
          </div>
       </>
    );
