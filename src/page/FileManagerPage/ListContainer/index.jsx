@@ -235,18 +235,16 @@ const ListContainer = () => {
    const renderDownload = () => {
       const handleDownload = async (id) => {
          setContextMenu(defaultContextMenu);
-         const { data } = await api.get(`/file/download/${id}`);
-         if (data) {
-            window.open(data);
-         }
+         window.open(`https://drive.google.com/uc?id=${id}&export=download`);
+         // const { data } = await api.get(`/file/download/${id}`);
+         // if (data) {
+         //    window.open(data);
+         // }
       };
 
       const handleView = async (id) => {
          setContextMenu(defaultContextMenu);
-         const { data } = await api.get(`/file/view/${id}`);
-         if (data) {
-            window.open(data);
-         }
+         window.open(`https://drive.google.com/file/d/${id}/view`);
       };
       if (selectedItems.length == 1) {
          const item = itemsData.find((item) => item._id === selectedItems[0]);
