@@ -1,68 +1,63 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 
-const FolderUpload = () => {
-   const [folderStructure, setFolderStructure] = useState(null);
-   console.log(folderStructure);
+const Upload = () => {
+   const [fileStructure, setFileStructure] = useState([]);
 
-   const handleFileChange = (event) => {
-      const files = Array.from(event.target.files);
-      if (files.length > 0) {
-         const rootFolderName = files[0].webkitRelativePath.split("/")[0];
-         const structuredFolder = createFolderStructure(files, rootFolderName);
-         setFolderStructure(structuredFolder);
-      }
-   };
+   const onDrop = useCallback((acceptedFiles) => {
+      setFileStructure(buildFileStructure(acceptedFiles));
+   }, []);
 
-   const createFolderStructure = (files, rootFolderName) => {
-      const root = { folderName: rootFolderName, children: [] };
+   const { getRootProps, getInputProps } = useDropzone({
+      onDrop,
+      directory: true,
+      useFsAccessApi: false,
+   });
+
+   const buildFileStructure = (files) => {
+      const root = [];
 
       files.forEach((file) => {
-         const parts = file.webkitRelativePath.split("/").slice(1);
-         addToStructure(root, parts, file);
+         let pathParts = (file.webkitRelativePath || file.path).split("/");
+         if (pathParts[0] == "") {
+            pathParts.shift();
+         }
+
+         let temp = root;
+
+         for (let i = 0; i < pathParts.length - 1; i++) {
+            const findFolder = temp.find((item) => item?.folderName && item?.folderName == pathParts[i]);
+            if (findFolder) {
+               temp = findFolder.children;
+            } else {
+               const newFolder = { folderName: pathParts[i], children: [] };
+               temp.push(newFolder);
+               temp = newFolder.children;
+            }
+         }
+
+         temp.push(file);
       });
 
       return root;
    };
 
-   const addToStructure = (current, parts, file) => {
-      if (parts.length === 1) {
-         current.children.push({ name: file.name, file: file });
-      } else {
-         let folder = current.children.find((child) => child.folderName === parts[0]);
-
-         if (!folder) {
-            folder = { folderName: parts[0], children: [] };
-            current.children.push(folder);
-         }
-
-         addToStructure(folder, parts.slice(1), file);
-      }
-   };
-
-   const traverse = (node) => {
-      if (node.children) {
-         node.children.forEach((child) => {
-            if (child.file) {
-               console.log(`File: ${child.name}`);
-            } else {
-               console.log(`Folder: ${child.folderName}`);
-               traverse(child); // Recursively traverse subfolders
-            }
-         });
-      }
-   };
-
    return (
       <div>
-         <input type="file" webkitdirectory="true" onChange={handleFileChange} />
-         {folderStructure && (
-            <div>
-               <pre>{JSON.stringify(folderStructure, null, 2)}</pre>
-               <button onClick={() => traverse(folderStructure)}>Traverse</button>
-            </div>
-         )}
+         <div {...getRootProps()} style={dropzoneStyle}>
+            <input {...getInputProps()} webkitdirectory="true" />
+            <p>Kéo và thả file hoặc folder vào đây, hoặc nhấp để chọn file/folder</p>
+         </div>
+         <pre>{JSON.stringify(fileStructure, null, 2)}</pre>
       </div>
    );
 };
 
-export default FolderUpload;
+const dropzoneStyle = {
+   border: "2px dashed #ccc",
+   borderRadius: "4px",
+   padding: "20px",
+   textAlign: "center",
+};
+
+export default Upload;

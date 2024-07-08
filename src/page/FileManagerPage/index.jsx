@@ -48,28 +48,64 @@ export default () => {
       folderInputRef.current.click();
    };
 
-   const uploadFile = async (file, folderId) => {
+   const fileChange = (e) => {
+      const files = [];
+      for (let file of e.target.files) {
+         files.push(file);
+      }
+      if (files.length > 0) {
+         uploadDrive(files);
+         fileInputRef.current.value = null;
+      }
+   };
+
+   const onDrop = (acceptedFiles) => {
+      const structedFiles = buildFileStructure(acceptedFiles);
+      uploadDrive(structedFiles);
+   };
+   const { getRootProps, getInputProps } = useDropzone({
+      onDrop,
+      noClick: true,
+      noKeyboard: true,
+      directory: true,
+   });
+
+   const folderChange = (event) => {
+      const files = Array.from(event.target.files);
+      const structure = buildFileStructure(files);
+      uploadDrive(structure);
+      folderInputRef.current.value = null;
+   };
+
+   // ---------------------------------------------------------------------
+
+   const uploadFile = async (file, folderId, level = 0) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("fileName", file.name);
 
-      const toastId = toast.loading(`Đang tải ${file.name}...`, {
-         autoClose: false,
-      });
-
+      let toastId;
       try {
+         if (level == 0) {
+            toastId = toast.loading(`Đang tải ${file.name}...`, {
+               autoClose: false,
+            });
+         }
          const { data } = await api.post(`/file/upload/${folderId ? folderId : "root"}`, formData);
          if (data) {
-            toast.update(toastId, {
-               render: `${file.name} tải lên thành công!`,
-               type: "success",
-               isLoading: false,
-               autoClose: 3000,
-               closeOnClick: true,
-            });
+            if (level == 0) {
+               toast.update(toastId, {
+                  render: `${file.name} tải lên thành công!`,
+                  type: "success",
+                  isLoading: false,
+                  autoClose: 3000,
+                  closeOnClick: true,
+               });
+            }
             return data;
          }
       } catch (error) {
+         console.log(error);
          toast.update(toastId, {
             render: `Error uploading ${file.name}`,
             type: "error",
@@ -80,73 +116,32 @@ export default () => {
       }
    };
 
-   const uploadListFile = (fileList) => {
-      try {
-         let delay = 0;
-         for (let file of fileList) {
-            setTimeout(() => {
-               const newFile = uploadFile(file, folderId);
-               if (newFile) {
-                  dispatch(AddFileAction(newFile));
-               }
-            }, delay);
-            delay += 1000;
-         }
-      } catch (error) {}
-   };
-
-   const fileChange = (e) => {
-      const files = [];
-      for (let file of e.target.files) {
-         files.push(file);
-      }
-      files.length > 0 && uploadListFile(files);
-   };
-
-   const onDrop = (acceptedFiles) => {
-      uploadListFile(acceptedFiles);
-   };
-
-   const { getRootProps, getInputProps } = useDropzone({
-      onDrop,
-      noClick: true,
-      noKeyboard: true,
-      directory: true,
-   });
-
-   // --------------------------------------- UPLOAD FOLDER --------------------------------
-   const createFolderStructure = (files, rootFolderName) => {
-      const root = { folderName: rootFolderName, children: [] };
+   const buildFileStructure = (files) => {
+      const root = [];
 
       files.forEach((file) => {
-         const parts = file.webkitRelativePath.split("/").slice(1);
-         addToStructure(root, parts, file);
+         let pathParts = (file.webkitRelativePath || file.path).split("/");
+         if (pathParts[0] == "") {
+            pathParts.shift();
+         }
+
+         let temp = root;
+
+         for (let i = 0; i < pathParts.length - 1; i++) {
+            const findFolder = temp.find((item) => item?.folderName && item?.folderName == pathParts[i]);
+            if (findFolder) {
+               temp = findFolder.children;
+            } else {
+               const newFolder = { folderName: pathParts[i], children: [] };
+               temp.push(newFolder);
+               temp = newFolder.children;
+            }
+         }
+
+         temp.push(file);
       });
 
       return root;
-   };
-
-   const addToStructure = (current, parts, file) => {
-      if (parts.length === 1) {
-         current.children.push(file);
-      } else {
-         let folder = current.children.find((child) => child.folderName === parts[0]);
-
-         if (!folder) {
-            folder = { folderName: parts[0], children: [] };
-            current.children.push(folder);
-         }
-         addToStructure(folder, parts.slice(1), file);
-      }
-   };
-
-   const folderChange = (event) => {
-      const files = Array.from(event.target.files);
-      if (files.length > 0) {
-         const rootFolderName = files[0].webkitRelativePath.split("/")[0];
-         const structuredFolder = createFolderStructure(files, rootFolderName);
-         uploadFolder(structuredFolder, folderId);
-      }
    };
 
    const createFolder = async (name, folderId) => {
@@ -157,27 +152,59 @@ export default () => {
    };
 
    const uploadFolder = async (folderStructure, folderId, level = 0) => {
+      let toastId;
+
       try {
          const { folderName, children } = folderStructure;
+         if (level === 0) {
+            toastId = toast.loading(`Đang tạo ${folderName}...`, {
+               autoClose: false,
+            });
+         }
+
          const newFolder = await createFolder(folderName, folderId);
          if (newFolder) {
-            let delay = 0;
-            for (let child of children) {
-               setTimeout(() => {
-                  if (child instanceof File) {
-                     uploadFile(child, newFolder._id);
-                  } else {
-                     uploadFolder(child, newFolder._id, level + 1);
-                  }
-               }, [delay]);
+            for (let i = 0; i < children.length; i++) {
+               const child = children[i];
+               if (child instanceof File) {
+                  await uploadFile(child, newFolder._id, level + 1);
+               } else {
+                  await uploadFolder(child, newFolder._id, level + 1);
+               }
             }
             if (level == 0) {
+               toast.update(toastId, {
+                  render: `${folderName} tạo thành công!`,
+                  type: "success",
+                  isLoading: false,
+                  autoClose: 3000,
+                  closeOnClick: true,
+               });
                dispatch(AddFileAction(newFolder));
+            }
+         } else {
+            toast.dismiss(toastId);
+         }
+      } catch (error) {
+         console.log(error);
+      }
+   };
+   // ---------------------------------------------------------------------------------
+
+   const uploadDrive = async (structure) => {
+      try {
+         for (let item of structure) {
+            if (item instanceof File) {
+               const newFile = await uploadFile(item, folderId);
+               if (newFile) {
+                  dispatch(AddFileAction(newFile));
+               }
+            } else {
+               uploadFolder(item, folderId, 0);
             }
          }
       } catch (error) {}
    };
-   // ---------------------------------------------------------------------------------
 
    return (
       <div className="FileManagerPage">
