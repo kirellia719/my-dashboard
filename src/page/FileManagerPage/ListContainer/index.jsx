@@ -5,7 +5,7 @@ import api from "api";
 import { useDispatch, useSelector } from "react-redux";
 import FileItem from "../FileItem";
 import { useState, useRef, useEffect } from "react";
-import { Button, ButtonGroup, Dropdown, Input, List, Modal, Notification, Panel, Popover } from "rsuite";
+import { Button, ButtonGroup, List, Modal, Notification, Panel } from "rsuite";
 import { toast } from "react-toastify";
 import { DeleteFileAction } from "../../../redux/FileManagerReducer";
 import ModalRename from "./ModalRename";

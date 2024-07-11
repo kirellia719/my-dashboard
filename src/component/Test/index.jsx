@@ -1,63 +1,59 @@
-import React, { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
+// src/components/Map.js
+import React, { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import customIconUrl from "leaflet/dist/images/marker-icon.png";
+import customIconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
+import customIconShadowUrl from "leaflet/dist/images/marker-shadow.png";
 
-const Upload = () => {
-   const [fileStructure, setFileStructure] = useState([]);
+// Fix for marker icons not showing correctly
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+   iconRetinaUrl: customIconRetinaUrl,
+   iconUrl: customIconUrl,
+   shadowUrl: customIconShadowUrl,
+});
 
-   const onDrop = useCallback((acceptedFiles) => {
-      setFileStructure(buildFileStructure(acceptedFiles));
-   }, []);
+const LocationMarker = () => {
+   const [position, setPosition] = useState(null);
+   const map = useMap();
 
-   const { getRootProps, getInputProps } = useDropzone({
-      onDrop,
-      directory: true,
-      useFsAccessApi: false,
-   });
+   useEffect(() => {
+      if (navigator.geolocation) {
+         const watchId = navigator.geolocation.watchPosition((pos) => {
+            console.log(pos);
+            const { latitude, longitude } = pos.coords;
+            const newPosition = [latitude, longitude];
+            setPosition(newPosition);
+            map.setView(newPosition, map.getZoom());
+         });
 
-   const buildFileStructure = (files) => {
-      const root = [];
+         return () => {
+            navigator.geolocation.clearWatch(watchId);
+         };
+      }
+   }, [map]);
 
-      files.forEach((file) => {
-         let pathParts = (file.webkitRelativePath || file.path).split("/");
-         if (pathParts[0] == "") {
-            pathParts.shift();
-         }
-
-         let temp = root;
-
-         for (let i = 0; i < pathParts.length - 1; i++) {
-            const findFolder = temp.find((item) => item?.folderName && item?.folderName == pathParts[i]);
-            if (findFolder) {
-               temp = findFolder.children;
-            } else {
-               const newFolder = { folderName: pathParts[i], children: [] };
-               temp.push(newFolder);
-               temp = newFolder.children;
-            }
-         }
-
-         temp.push(file);
-      });
-
-      return root;
-   };
-
-   return (
-      <div>
-         <div {...getRootProps()} style={dropzoneStyle}>
-            <input {...getInputProps()} webkitdirectory="true" />
-            <p>Kéo và thả file hoặc folder vào đây, hoặc nhấp để chọn file/folder</p>
-         </div>
-         <pre>{JSON.stringify(fileStructure, null, 2)}</pre>
-      </div>
+   return position === null ? null : (
+      <Marker position={position}>
+         <Popup>You are here</Popup>
+      </Marker>
    );
 };
 
-const dropzoneStyle = {
-   border: "2px dashed #ccc",
-   borderRadius: "4px",
-   padding: "20px",
-   textAlign: "center",
+const Map = () => {
+   const initialPosition = [51.505, -0.09];
+
+   return (
+      <MapContainer center={initialPosition} zoom={13} style={{ height: "100vh", width: "100vw" }}>
+         <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+         />
+         <LocationMarker />
+      </MapContainer>
+   );
 };
 
-export default Upload;
+export default Map;

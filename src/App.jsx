@@ -10,10 +10,13 @@ import { Provider } from "react-redux";
 import AuthLayout from "./layout/AuthLayout";
 import ProfilePage from "~/page/ProfilePage";
 import ToastContainer from "rsuite/esm/toaster/ToastContainer";
+
+import Test from "./component/Test";
 import { ToastContainer as ToastifyContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter([
+   { path: "/test", element: <Test /> },
    {
       path: "/",
       element: <MainLayout />,

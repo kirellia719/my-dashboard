@@ -5,15 +5,8 @@ import NotePage from "~/page/NotePage";
 import FileManagerPage from "~/page/FileManagerPage";
 import VideoPage from "~/page/VideoPage";
 import MapPage from "~/page/MapPage";
-import Test from "../component/Test";
 
 const router_dom = [
-   {
-      link: "test",
-      icon: SingleSourceIcon,
-      title: "Test",
-      page: Test,
-   },
    {
       link: "file-manager",
       icon: SingleSourceIcon,
@@ -27,9 +20,9 @@ const router_dom = [
       page: NotePage,
    },
    {
-      link: "video (not)",
+      link: "video",
       icon: SingleSourceIcon,
-      title: "Video",
+      title: "Video (not)",
       page: VideoPage,
    },
    {
