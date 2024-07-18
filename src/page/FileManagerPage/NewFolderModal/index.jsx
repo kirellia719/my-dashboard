@@ -1,5 +1,5 @@
 import { Button, Form, Input, Modal } from "rsuite";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "api";
 import { useParams } from "react-router-dom";
 
@@ -11,6 +11,7 @@ export default ({ open, onClose }) => {
    const dispatch = useDispatch();
    const [name, setName] = useState("");
    const [loading, setLoading] = useState(false);
+   const nameRef = useRef(null);
 
    const folderId = useParams()["*"];
 
@@ -35,13 +36,22 @@ export default ({ open, onClose }) => {
          setLoading(false);
       }
    };
+   useEffect(() => {
+      open && nameRef.current.focus();
+   }, [open]);
 
    return (
       <Modal open={open} onClose={onClose} className="my-modal">
          <form onSubmit={handleSubmit}>
             <Modal.Header>Thư mục mới</Modal.Header>
             <Modal.Body style={{ overflow: "unset" }}>
-               <Input placeholder="Tên thư mục" value={name} onChange={(v) => setName(v)} disabled={loading} />
+               <Input
+                  placeholder="Tên thư mục"
+                  value={name}
+                  onChange={(v) => setName(v)}
+                  disabled={loading}
+                  inputRef={nameRef}
+               />
             </Modal.Body>
             <Modal.Footer>
                <Button onClick={onClose}>Hủy</Button>

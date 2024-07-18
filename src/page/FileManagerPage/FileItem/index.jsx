@@ -1,6 +1,7 @@
 import "./style.scss";
 
 import FileIcon from "./image-icon/file-icon.png";
+import PPIcon from "./image-icon/pp-icon.png";
 import DocIcon from "./image-icon/doc-icon.png";
 import JSIcon from "./image-icon/js-icon.png";
 import RarIcon from "./image-icon/rar-icon.png";
@@ -23,16 +24,16 @@ const mappingIcon = {
 
    "application/msword": DocIcon,
    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": DocIcon,
-   "application/vnd.ms-powerpoint": DocIcon,
-   "application/vnd.openxmlformats-officedocument.presentationml.presentation": DocIcon,
+   "application/vnd.ms-powerpoint": PPIcon,
+   "application/vnd.openxmlformats-officedocument.presentationml.presentation": PPIcon,
 
    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ExcelIcon,
    "video/mp4": VideoIcon,
    "application/octet-stream": RarIcon,
-   "text/javascript": JSIcon,
-
-   "text/css": CSSIcon,
    "application/x-zip-compressed": RarIcon,
+
+   "text/javascript": JSIcon,
+   "text/css": CSSIcon,
 
    folder: FolderIcon,
 };
