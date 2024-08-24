@@ -1,54 +1,51 @@
+import "mapbox-gl/dist/mapbox-gl.css";
+
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import Map, { Marker, NavigationControl } from "react-map-gl";
 
-const MapPlaceholder = () => {
-   return (
-      <div
-         style={{
-            width: "100%",
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "#f0f0f0",
-         }}
-      >
-         <p>Loading map...</p>
-      </div>
-   );
-};
+const MapComponent = () => {
+   const [viewState, setViewState] = useState({
+      longitude: 105.854444,
+      latitude: 21.028511,
+      zoom: 12,
+   });
 
-const CustomMap = () => {
-   const [isMapReady, setIsMapReady] = useState(false);
+   const [currentLocation, setCurrentLocation] = useState(null);
 
-   // Fake a loading state for demo purposes
    useEffect(() => {
-      const timer = setTimeout(() => {
-         setIsMapReady(true);
-      }, 2000); // Simulate a 2 seconds loading time
-
-      return () => clearTimeout(timer);
+      if (navigator.geolocation) {
+         navigator.geolocation.getCurrentPosition(
+            (position) => {
+               const { latitude, longitude } = position.coords;
+               setCurrentLocation({ latitude, longitude });
+               setViewState({
+                  ...viewState,
+                  latitude,
+                  longitude,
+                  zoom: 15, // Zoom gần vào vị trí hiện tại
+               });
+            },
+            (error) => {
+               console.error("Error getting location: ", error);
+            }
+         );
+      }
    }, []);
 
    return (
-      <>
-         {!isMapReady && <MapPlaceholder />}
-         {isMapReady && (
-            <MapContainer
-               center={[51.505, -0.09]}
-               zoom={13}
-               style={{ height: "100vh", width: "100%" }}
-               whenReady={() => setIsMapReady(true)}
-            >
-               <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-               />
-            </MapContainer>
+      <Map
+         {...viewState}
+         // style={{ width: "100%", height: "500px" }}
+         mapStyle="mapbox://styles/mapbox/streets-v11"
+         mapboxAccessToken={import.meta.env.VITE_MAPBOX_KEY}
+         onMove={(evt) => setViewState(evt.viewState)}
+      >
+         {currentLocation && (
+            <Marker longitude={currentLocation.longitude} latitude={currentLocation.latitude} color="red" />
          )}
-      </>
+         <NavigationControl position="top-right" />
+      </Map>
    );
 };
 
-export default CustomMap;
+export default MapComponent;
